@@ -1,0 +1,11 @@
+.popup__input-error {
+  position: relative;
+  height: 0;
+  top: 5px;
+  color: red;
+  font-size: 12px;
+}
+
+.popup__input-error:first-of-type {
+  top: -20px;
+}

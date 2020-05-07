@@ -8,7 +8,6 @@ const app = express();
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-
 app.use('/cards', cards);
 app.use('/users', users);
 app.get('*', (req, res) => {

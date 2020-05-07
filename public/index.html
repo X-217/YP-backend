@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <meta content="ie=edge" http-equiv="X-UA-Compatible">
+  <title>Mesto</title>
+  <link href="./pages/index.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="root">
+
+  <header class="header root__section">
+    <img alt="mesto logo" class="logo" src="./images/logo.svg">
+  </header>
+
+  <div class="profile root__section">
+    <div class="user-info">
+      <div class="user-info__photo"></div>
+      <div class="user-info__data">
+        <h1 class="user-info__name"></h1>
+        <p class="user-info__job"></p>
+        <button class="button user-info__edit-button">Edit</button>
+      </div>
+      <button class="button user-info__button">+</button>
+    </div>
+  </div>
+
+  <div class="places-list root__section"></div>
+
+  <div class="popup">
+    <div class="popup__content">
+      <img alt="Close" class="popup__close popup__close_form" src="./images/close.svg">
+      <h3 class="popup__title"></h3>
+      <form class="popup__form" novalidate>
+        <input class="popup__input popup__input_firstInput" maxlength="30" minlength="2" required type="text">
+        <div class="popup__input-error"></div>
+        <input class="popup__input popup__input_secondInput" required type="text">
+        <div class="popup__input-error"></div>
+        <button class="button popup__button" id="submitButton" type="submit"></button>
+      </form>
+    </div>
+  </div>
+
+  <div class="popup popup__image-viewer">
+    <div class="popup__image-container">
+      <img alt="изображение с карточки" class="popup__image" src="">
+      <img alt="Close" class="popup__close popup__close_img" src="./images/close.svg">
+    </div>
+  </div>
+</div>
+
+<script src="JS/API.js"></script>
+<script src="JS/UserInfo.js"></script>
+<script src="JS/FormValidator.js"></script>
+<script src="JS/Card.js"></script>
+<script src="JS/CardList.js"></script>
+<script src="JS/Popup.js"></script>
+<script src="JS/AddPlacePopup.js"></script>
+<script src="JS/EditUserPopup.js"></script>
+<script src="JS/ImageViewerPopup.js"></script>
+<script src="JS/script.js"></script>
+
+</body>
+</html>
