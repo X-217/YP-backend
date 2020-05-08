@@ -1,8 +1,8 @@
 {
   "name": "yp-12",
   "version": "0.0.1",
-  "description": "",
-  "main": "index.js",
+  "description": "developing a backend for a training project 'Mesto'",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node app.js",
@@ -11,12 +11,12 @@
   "author": "Alexey Sidorov <2176545@gmail.com>",
   "license": "ISC",
   "dependencies": {
-    "eslint-config-airbnb-base": "^14.1.0",
-    "eslint-plugin-import": "^2.20.2",
     "express": "^4.17.1"
   },
   "devDependencies": {
     "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.1.0",
+    "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-node": "^11.1.0",
     "nodemon": "^2.0.3"
   }

@@ -11,8 +11,9 @@ router.get('/:id', (req, res) => {
   const result = users.find((item) => item._id === id);
   if (!result) {
     res.status(404).send({ message: 'Нет пользователя с таким id' });
+  } else {
+    res.send(result);
   }
-  res.send(result);
 });
 
 module.exports = router;
