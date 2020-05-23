@@ -1,21 +1,26 @@
 const path = require('path');
 const router = require('express').Router();
 // eslint-disable-next-line import/no-dynamic-require
-const users = require(path.join(__dirname, '../data/users.json'));
+const User = require(path.join(__dirname, '../models/user.js'));
 
 router.get('/', (req, res) => {
-  res.send(users);
+  User.find({})
+    .then((user) => res.send({ data: user }))
+    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 });
 
-// eslint-disable-next-line consistent-return
 router.get('/:id', (req, res) => {
-  const { id } = req.params;
-  // eslint-disable-next-line no-underscore-dangle
-  const result = users.find((item) => item._id === id);
-  if (!result) {
-    return res.status(404).send({ message: 'Нет пользователя с таким id' });
-  }
-  res.send(result);
+  User.findById(req.params.id)
+    .then((user) => res.send({ data: user }))
+    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+});
+
+router.post('/', (req, res) => {
+  const { name, about, avatar } = req.body;
+  console.log(req);
+  User.create({ name, about, avatar })
+    .then((user) => res.send({ data: user }))
+    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 });
 
 module.exports = router;
