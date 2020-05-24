@@ -1,5 +1,5 @@
 const path = require('path');
-// eslint-disable-next-line import/no-dynamic-require
+
 const Card = require(path.join(__dirname, '../models/card'));
 
 const getAllCards = (req, res) => {
@@ -16,7 +16,8 @@ const removeCardByID = (req, res) => {
 
 const createCard = (req, res) => {
   const { name, link } = req.body;
-  Card.create({ name, link })
+  const owner = req.user._id;
+  Card.create({ name, link, owner })
     .then((card) => res.status(200).send(card))
     .catch(() => res.status(500).send({ message: 'Ошибка добавления карточки' }));
 };
