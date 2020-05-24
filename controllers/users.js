@@ -21,8 +21,24 @@ const createUser = (req, res) => {
     .catch(() => res.status(500).send({ message: 'Ошибка добавления пользователя', name }));
 };
 
+const patchUser = (req, res) => {
+  const { name, about } = req.body;
+  User.findByIdAndUpdate(req.user._id, { name, about }, { new: true })
+    .then((user) => res.status(200).send(user))
+    .catch(() => res.status(500).send({ message: 'Ошибка обновления информации пользователя', name }));
+};
+
+const patchUserAvatar = (req, res) => {
+  const { avatar, name } = req.body;
+  User.findByIdAndUpdate(req.user._id, { avatar }, { new: true })
+    .then((user) => res.status(200).send(user))
+    .catch(() => res.status(500).send({ message: 'Ошибка обновления аватара пользователя', name }));
+};
+
 module.exports = {
   getAllUsers,
   getUserByID,
   createUser,
+  patchUser,
+  patchUserAvatar,
 };
