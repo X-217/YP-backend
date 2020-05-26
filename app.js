@@ -6,9 +6,27 @@ const bodyParser = require('body-parser');
 const cards = require(path.join(__dirname, 'routes/cards.js'));
 const users = require(path.join(__dirname, 'routes/users.js'));
 
-const PORT = process.env.PORT || 3000;
-const mongoDB = 'mongodb://localhost:27017/mestodb';
 const app = express();
+
+const PORT = process.env.PORT || 3000;
+const mongoDb = {
+  site: 'localhost',
+  port: process.env.MONGODB_URI || '27017',
+  name: 'mestodb',
+};
+const startDatabase = async () => {
+  try {
+    await mongoose.connect(`mongodb://${mongoDb.site}:${mongoDb.port}/${mongoDb.name}`, {
+      useNewUrlParser: true,
+      useCreateIndex: true,
+      useFindAndModify: false,
+      useUnifiedTopology: true,
+    });
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.log(`Ошибка подключения к БД, порт ${mongoDb.port}`, err);
+  }
+};
 
 app.use(bodyParser.json());
 app.use((req, res, next) => {
@@ -24,14 +42,5 @@ app.all('*', (req, res) => {
   res.status(404).send({ message: 'Запрашиваемый ресурс не найден' });
 });
 
-try {
-  mongoose.connect(mongoDB, {
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useFindAndModify: false,
-    useUnifiedTopology: true,
-  });
-} catch (err) {
-  console.log('Ошибка подключения к БД', err);
-}
-app.listen(PORT);
+startDatabase()
+  .then(app.listen(PORT));
