@@ -8,26 +8,29 @@ const getAllCards = (req, res) => {
       res.status(200).send(cards);
     })
     .catch((err) => {
-      const message = 'Произошла ошибка';
-      const error = err.message;
-      res.status(500).send({ message, error });
+      const { message } = err;
+      const error = 'Произошла ошибка';
+      res.status(500).send({ error, message });
     });
 };
 
 const removeCardByID = (req, res) => {
-  Card.findByIdAndDelete(req.params.id)
-    .then((card) => {
-      if (card) {
-        const message = 'Карточка успешно удалена';
-        res.status(200).send({ message });
-      } else {
-        throw new Error();
-      }
+  Card.findOneAndDelete({ _id: req.params.id })
+    .orFail()
+    .then(() => {
+      const message = 'Карточка успешно удалена';
+      res.status(200).send({ message });
     })
     .catch((err) => {
-      const message = 'Невозможно удалить: карточки с данным ID не существует';
-      const error = err.message;
-      res.status(400).send({ message, error });
+      const { message } = err;
+      const errName = err.name;
+      let errStatus = 500;
+      let error = 'Произошла ошибка';
+      if ((errName === 'CatError') || (errName === 'DocumentNotFoundError')) {
+        errStatus = 400;
+        error = `Невозможно удалить, карточки с ID ${req.params.id} не существует`;
+      }
+      res.status(errStatus).send({ error, message });
     });
 };
 
@@ -39,10 +42,10 @@ const createCard = (req, res) => {
       res.status(200).send(card);
     })
     .catch((err) => {
-      const message = 'Ошибка создания карточки';
-      const error = err.message;
-      const errStatus = (error.includes('validation')) ? 400 : 500;
-      res.status(errStatus).send({ message, error });
+      const error = 'Ошибка создания карточки';
+      const { message } = err;
+      const errStatus = (err.name === 'ValidationError') ? 400 : 500;
+      res.status(errStatus).send({ error, message });
     });
 };
 
@@ -53,13 +56,15 @@ const likeCard = (req, res) => {
     { $addToSet: { likes: owner } },
     { new: true },
   )
+    .orFail()
     .then((card) => {
       res.status(200).send(card);
     })
     .catch((err) => {
-      const message = 'Ошибка добавления лайка';
-      const error = err.message;
-      res.status(500).send({ message, error });
+      const error = 'Ошибка добавления лайка';
+      const { message } = err;
+      const errStatus = (err.name === 'DocumentNotFoundError') ? 400 : 500;
+      res.status(errStatus).send({ error, message });
     });
 };
 
@@ -70,13 +75,15 @@ const dislikeCard = (req, res) => {
     { $pull: { likes: owner } },
     { new: true },
   )
+    .orFail()
     .then((card) => {
       res.status(200).send(card);
     })
     .catch((err) => {
-      const message = 'Ошибка снятия лайка';
-      const error = err.message;
-      res.status(500).send({ message, error });
+      const error = 'Ошибка снятия лайка';
+      const { message } = err;
+      const errStatus = (err.name === 'DocumentNotFoundError') ? 400 : 500;
+      res.status(errStatus).send({ error, message });
     });
 };
 
