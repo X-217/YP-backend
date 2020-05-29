@@ -26,7 +26,7 @@ const removeCardByID = (req, res) => {
       const errName = err.name;
       let errStatus = 500;
       let error = 'Произошла ошибка';
-      if ((errName === 'CatError') || (errName === 'DocumentNotFoundError')) {
+      if ((errName === 'CastError') || (errName === 'DocumentNotFoundError')) {
         errStatus = 400;
         error = `Невозможно удалить, карточки с ID ${req.params.id} не существует`;
       }

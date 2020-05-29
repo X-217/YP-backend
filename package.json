@@ -1,6 +1,6 @@
 {
   "name": "YP-backend",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "developing a backend for a training project 'Mesto'",
   "main": "app.js",
   "scripts": {

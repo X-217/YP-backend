@@ -25,7 +25,7 @@ const getUserByID = (req, res) => {
       const errName = err.name;
       let errStatus = 500;
       let error = 'Произошла ошибка';
-      if ((errName === 'CatError') || (errName === 'DocumentNotFoundError')) {
+      if ((errName === 'CastError') || (errName === 'DocumentNotFoundError')) {
         errStatus = 400;
         error = `Пользователя с ID ${req.params.id} не существует`;
       }
@@ -49,28 +49,42 @@ const createUser = (req, res) => {
 
 const patchUser = (req, res) => {
   const { name, about } = req.body;
-  User.findByIdAndUpdate(req.user._id, { name, about }, { new: true })
+  const userID = req.user._id;
+  User.findByIdAndUpdate(userID, { name, about }, { new: true, runValidators: true })
+    .orFail()
     .then((user) => {
       res.status(200).send(user);
     })
     .catch((err) => {
       const { message } = err;
-      const error = 'Ошибка обновления информации пользователя';
-      const errStatus = (err.name === 'ValidationError') ? 400 : 500;
+      const errName = err.name;
+      let errStatus = 500;
+      let error = 'Ошибка обновления профиля пользователя';
+      if ((errName === 'CastError') || (errName === 'DocumentNotFoundError')) {
+        errStatus = 400;
+        error = `Невозможно обновить профиль, пользователя с ID ${userID} не существует`;
+      }
       res.status(errStatus).send({ error, message });
     });
 };
 
 const patchUserAvatar = (req, res) => {
   const { avatar } = req.body;
-  User.findByIdAndUpdate(req.user._id, { avatar }, { new: true })
+  const userID = req.user._id;
+  User.findByIdAndUpdate(userID, { avatar }, { new: true, runValidators: true })
+    .orFail()
     .then((user) => {
       res.status(200).send(user);
     })
     .catch((err) => {
       const { message } = err;
-      const error = 'Ошибка обновления аватара пользователя';
-      const errStatus = (err.name === 'ValidationError') ? 400 : 500;
+      const errName = err.name;
+      let errStatus = 500;
+      let error = 'Ошибка обновления аватара пользователя';
+      if ((errName === 'CastError') || (errName === 'DocumentNotFoundError')) {
+        errStatus = 400;
+        error = `Невозможно обновить аватар, пользователя с ID ${userID} не существует`;
+      }
       res.status(errStatus).send({ error, message });
     });
 };
