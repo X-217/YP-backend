@@ -2,39 +2,28 @@ const path = require('path');
 
 const Card = require(path.join(__dirname, '../models/card'));
 
-const getAllCards = (req, res) => {
+const getAllCards = (req, res, next) => {
   Card.find({})
     .then((cards) => {
       res.status(200).send(cards);
     })
-    .catch((err) => {
-      const { message } = err;
-      const error = 'Произошла ошибка';
-      res.status(500).send({ error, message });
-    });
+    .catch(next);
 };
 
-const removeCardByID = (req, res) => {
+const removeCardByID = (req, res, next) => {
   Card.findOneAndDelete({ _id: req.params.id })
     .orFail()
-    .then(() => {
+    .then((card) => {
       const message = 'Карточка успешно удалена';
-      res.status(200).send({ message });
+      res.status(200).send({ message, card });
     })
     .catch((err) => {
-      const { message } = err;
-      const errName = err.name;
-      let errStatus = 500;
-      let error = 'Произошла ошибка';
-      if ((errName === 'CastError') || (errName === 'DocumentNotFoundError')) {
-        errStatus = 400;
-        error = `Невозможно удалить, карточки с ID ${req.params.id} не существует`;
-      }
-      res.status(errStatus).send({ error, message });
+      err.message = `Невозможно удалить карточку: ${err.message}`;
+      next(err);
     });
 };
 
-const createCard = (req, res) => {
+const createCard = (req, res, next) => {
   const { name, link } = req.body;
   const owner = req.user._id;
   Card.create({ name, link, owner })
@@ -42,14 +31,12 @@ const createCard = (req, res) => {
       res.status(200).send(card);
     })
     .catch((err) => {
-      const error = 'Ошибка создания карточки';
-      const { message } = err;
-      const errStatus = (err.name === 'ValidationError') ? 400 : 500;
-      res.status(errStatus).send({ error, message });
+      err.message = `Ошибка создания карточки: ${err.message}`;
+      next(err);
     });
 };
 
-const likeCard = (req, res) => {
+const likeCard = (req, res, next) => {
   const owner = req.user._id;
   Card.findByIdAndUpdate(
     req.params.cardId,
@@ -61,14 +48,12 @@ const likeCard = (req, res) => {
       res.status(200).send(card);
     })
     .catch((err) => {
-      const error = 'Ошибка добавления лайка';
-      const { message } = err;
-      const errStatus = (err.name === 'DocumentNotFoundError') ? 400 : 500;
-      res.status(errStatus).send({ error, message });
+      err.message = `Ошибка добавления лайка: ${err.message}`;
+      next(err);
     });
 };
 
-const dislikeCard = (req, res) => {
+const dislikeCard = (req, res, next) => {
   const owner = req.user._id;
   Card.findByIdAndUpdate(
     req.params.cardId,
@@ -80,10 +65,8 @@ const dislikeCard = (req, res) => {
       res.status(200).send(card);
     })
     .catch((err) => {
-      const error = 'Ошибка снятия лайка';
-      const { message } = err;
-      const errStatus = (err.name === 'DocumentNotFoundError') ? 400 : 500;
-      res.status(errStatus).send({ error, message });
+      err.message = `Ошибка снятия лайка: ${err.message}`;
+      next(err);
     });
 };
 
