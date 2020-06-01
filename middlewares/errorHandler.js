@@ -3,6 +3,7 @@ module.exports.errorHandler = (err, req, res, next) => {
     DocumentNotFoundError: 404,
     CastError: 400,
     ValidationError: 400,
+    Unauthorized: 401,
   };
   const errName = err.name;
   const { message } = err || 'Неизвестная ошибка';
