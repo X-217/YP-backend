@@ -1,96 +1,68 @@
 const path = require('path');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { NODE_ENV, JWT_SECRET } = process.env;
 
 const User = require(path.join(__dirname, '../models/user.js'));
 
-const getAllUsers = (req, res, next) => {
+const getAllUsers = (req, res) => {
   User.find({})
-    .then((user) => {
-      res.status(200).send(user);
-    })
-    .catch(next);
+    .then((user) => res.status(200).send(user))
+    .catch((err) => res.status(500).send(`Произошла ошибка : ${err.name}`));
 };
 
-const getUserByID = (req, res, next) => {
+const getUserByID = async (req, res) => {
   User.findById(req.params.id)
     .orFail()
-    .then((user) => {
-      res.status(200).send(user);
-    })
+    .then((user) => res.status(200).send(user))
     .catch((err) => {
-      err.message = `Пользователя не существует: ${err.message}`;
-      next(err);
+      const errStatus = (err.name === 'DocumentNotFoundError') ? 404 : 400;
+      res.status(errStatus).send(`Невозможно получить данные пользователя: ${err.name}`);
     });
 };
 
-const createUser = (req, res, next) => {
-// обработка запроса с недостающими полями
-  const {
-    name, about, avatar, email, password,
-  } = req.body;
+const createUser = (req, res) => {
+  const { name, about, avatar, email, password } = req.body;
   bcrypt.hash(password, 10)
-    .then((hash) => User.create({
-      name, about, avatar, email, password: hash,
-    }))
-    .then((user) => { res.status(200).send(user); })
-    .catch((err) => {
-      err.message = `Ошибка добавления пользователя: ${err.message}`;
-      next(err);
-    });
+    .then((hash) => User.create({ name, about, avatar, email, password: hash }))
+    .then((user) => res.status(200).send(user))
+    .catch((err) => res.status(400).send(`Невозможно создать пользователя: ${err.message}`));
 };
 
-const login = (req, res, next) => {
+const login = (req, res) => {
   const { email, password } = req.body;
-  const { NODE_ENV, JWT_SECRET } = process.env;
-  User.findOne({ email })
+  User.findOne({ email }).select('+password')
     .then((user) => bcrypt.compare(password, user.password)
       .then((matched) => {
-        if (!matched) { throw new Error('Неправильные почта или пароль'); }
+        if (!matched) { res.status(401).send('Неправильные почта или пароль'); }
+        // eslint-disable-next-line no-shadow
         const token = jwt.sign({ _id: user._id },
           NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
           { expiresIn: '7d' });
-        res
-          .status(200)
-          .cookie('jwt', token, {
-            maxAge: 3600000 * 24 * 7,
-            httpOnly: true,
-            sameSite: true,
-          })
-          .end();
+        res.status(200).cookie('jwt', token, { httpOnly: true, sameSite: true }).send('Успешная авторизация');
       }))
-    .catch((err) => {
-      err.name = 'Unauthorized';
-      err.message = 'Неправильные почта или пароль';
-      next(err);
-    });
+    .catch(() => res.status(401).send('Неправильные почта или пароль'));
 };
 
-const patchUser = (req, res, next) => {
+const patchUser = (req, res) => {
   const { name, about } = req.body;
-  const userID = req.user._id;
-  User.findByIdAndUpdate(userID, { name, about }, { new: true, runValidators: true })
+  User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .orFail()
-    .then((user) => {
-      res.status(200).send(user);
-    })
+    .then((user) => res.status(200).send(user))
     .catch((err) => {
-      err.message = `Невозможно обновить профиль пользователя: ${err.message}`;
-      next(err);
+      const errStatus = (err.name === 'DocumentNotFoundError') ? 404 : 400;
+      res.status(errStatus).send(`Невозможно обновить профиль пользователя: ${err.name}`);
     });
 };
 
-const patchUserAvatar = (req, res, next) => {
+const patchUserAvatar = (req, res) => {
   const { avatar } = req.body;
-  const userID = req.user._id;
-  User.findByIdAndUpdate(userID, { avatar }, { new: true, runValidators: true })
+  User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     .orFail()
-    .then((user) => {
-      res.status(200).send(user);
-    })
+    .then((user) => res.status(200).send(user))
     .catch((err) => {
-      err.message = `Невозможно обновить аватар пользователя: ${err.message}`;
-      next(err);
+      const errStatus = (err.name === 'DocumentNotFoundError') ? 404 : 400;
+      res.status(errStatus).send(`Невозможно обновить аватар пользователя: ${err.name}`);
     });
 };
 
