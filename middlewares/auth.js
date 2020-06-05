@@ -8,6 +8,6 @@ module.exports.auth = (req, res, next) => {
     req.user = jwt.verify(token, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret');
     next();
   } catch (e) {
-    res.status(401).send('Ошибка авторизации');
+    res.status(401).send({ error: 'Ошибка авторизации' });
   }
 };

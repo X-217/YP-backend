@@ -38,9 +38,8 @@ app.use('/users', users);
 app.use('/cards', cards);
 
 app.all('*', (req, res) => {
-  res.status(404).send('Запрашиваемый ресурс не найден');
+  res.status(404).send({ error: 'Запрашиваемый ресурс не найден' });
 });
-
 
 startDatabase()
   .then(app.listen(PORT));

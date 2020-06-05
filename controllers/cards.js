@@ -5,7 +5,7 @@ const Card = require(path.join(__dirname, '../models/card'));
 const getAllCards = (req, res) => {
   Card.find({})
     .then((cards) => res.status(200).send(cards))
-    .catch((err) => res.status(500).send(`Произошла ошибка : ${err.name}`));
+    .catch((err) => res.status(500).send({ error: `Произошла ошибка : ${err.name}` }));
 };
 
 const removeCardByID = (req, res) => {
@@ -14,14 +14,14 @@ const removeCardByID = (req, res) => {
     .then((card) => {
       if (req.user._id === card.owner.toString()) {
         Card.findOneAndDelete({ _id: req.params.id })
-          .then(() => res.status(200).send(`Карточка ${req.params.id} успешно удалена`));
+          .then(() => res.status(200).send({ message: `Карточка ${req.params.id} успешно удалена` }));
       } else {
-        res.status(403).send('Невозможно удалить чужую карточку');
+        res.status(403).send({ error: 'Невозможно удалить чужую карточку' });
       }
     })
     .catch((err) => {
       const errStatus = (err.name === 'DocumentNotFoundError') ? 404 : 400;
-      res.status(errStatus).send(`Невозможно удалить карточку: ${err.name}`);
+      res.status(errStatus).send({ error: `Невозможно удалить карточку: ${err.name}` });
     });
 };
 
@@ -30,7 +30,7 @@ const createCard = (req, res) => {
   const owner = req.user._id;
   Card.create({ name, link, owner })
     .then((card) => res.status(200).send(card))
-    .catch((err) => res.status(400).send(`Ошибка создания карточки : ${err.name}`));
+    .catch((err) => res.status(400).send({ error: `Ошибка создания карточки : ${err.name}` }));
 };
 
 const likeCard = (req, res) => {
@@ -40,7 +40,7 @@ const likeCard = (req, res) => {
     .then((card) => res.status(200).send(card))
     .catch((err) => {
       const errStatus = (err.name === 'DocumentNotFoundError') ? 404 : 400;
-      res.status(errStatus).send(`Ошибка добавления лайка: ${err.name}`);
+      res.status(errStatus).send({ error: `Ошибка добавления лайка: ${err.name}` });
     });
 };
 
@@ -51,7 +51,7 @@ const dislikeCard = (req, res) => {
     .then((card) => res.status(200).send(card))
     .catch((err) => {
       const errStatus = (err.name === 'DocumentNotFoundError') ? 404 : 400;
-      res.status(errStatus).send(`Ошибка снятия лайка: ${err.name}`);
+      res.status(errStatus).send({ error: `Ошибка снятия лайка: ${err.name}` });
     });
 };
 
