@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const { errors } = require('celebrate');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const { errorHandler } = require(path.join(__dirname, 'middlewares/errorHandler.js'));
 const { auth } = require(path.join(__dirname, 'middlewares/auth.js'));
@@ -33,6 +34,7 @@ const startDatabase = async () => {
 };
 app.use(cookieParser());
 app.use(bodyParser.json());
+app.use(requestLogger);
 app.post('/signin', login);
 app.post('/signup', createUser);
 app.use(auth);
@@ -42,6 +44,7 @@ app.use('/cards', cards);
 app.all('*', (req, res) => {
   res.status(404).send({ error: 'Запрашиваемый ресурс не найден' });
 });
+app.use(errorLogger)
 app.use(errors());
 app.use(errorHandler);
 

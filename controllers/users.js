@@ -2,9 +2,6 @@ const path = require('path');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-// const httpErrors = require('../errors/http-errors');
-
-
 const { NODE_ENV, JWT_SECRET } = process.env;
 
 const User = require(path.join(__dirname, '../models/user.js'));
@@ -23,13 +20,17 @@ const getUserByID = async (req, res, next) => {
 };
 
 const createUser = (req, res, next) => {
-  const { name, about, avatar, email, password } = req.body;
+  const {
+    name, about, avatar, email, password,
+  } = req.body;
   User.findOne({ email })
     .orFail()
     .then(() => next({ name: 'Conflict', message: 'Пользователь с данной почтой уже зарегистрирован' }))
     .catch(() => {
       bcrypt.hash(password, 10)
-        .then((hash) => User.create({ name, about, avatar, email, password: hash }))
+        .then((hash) => User.create({
+          name, about, avatar, email, password: hash,
+        }))
         .then((user) => res.status(200).send({ message: `Создан новый пользователь, ID: '${user._id}'` }))
         .catch((err) => next(err));
     });

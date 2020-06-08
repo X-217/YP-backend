@@ -8,6 +8,7 @@ const {
   patchUser,
   patchUserAvatar,
 } = require(path.join(__dirname, '../controllers/users.js'));
+
 router.get('/', getAllUsers);
 router.get('/:id', celebrate({
   params: Joi.object().keys({ id: Joi.string().alphanum().length(24) }),
