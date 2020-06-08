@@ -2,6 +2,9 @@ const path = require('path');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
+// const httpErrors = require('../errors/http-errors');
+
+
 const { NODE_ENV, JWT_SECRET } = process.env;
 
 const User = require(path.join(__dirname, '../models/user.js'));

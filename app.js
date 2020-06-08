@@ -4,6 +4,7 @@ const path = require('path');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const { errors } = require('celebrate');
 
 const { errorHandler } = require(path.join(__dirname, 'middlewares/errorHandler.js'));
 const { auth } = require(path.join(__dirname, 'middlewares/auth.js'));
@@ -41,7 +42,8 @@ app.use('/cards', cards);
 app.all('*', (req, res) => {
   res.status(404).send({ error: 'Запрашиваемый ресурс не найден' });
 });
-app.use(errorHandler)
+app.use(errors());
+app.use(errorHandler);
 
 startDatabase()
   .then(app.listen(PORT));
