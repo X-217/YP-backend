@@ -1,22 +1,22 @@
+const { NODE_ENV, JWT_SECRET } = process.env;
 const path = require('path');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const { NODE_ENV, JWT_SECRET } = process.env;
-
 const User = require(path.join(__dirname, '../models/user.js'));
+const { NotFound, Unauthorized, Conflict } = require(path.join(__dirname, '../errors/http-errors'));
 
 const getAllUsers = (req, res, next) => {
   User.find({})
     .then((user) => res.status(200).send(user))
-    .catch((err) => next(err));
+    .catch(next);
 };
 
 const getUserByID = async (req, res, next) => {
   User.findById(req.params.id)
-    .orFail()
+    .orFail(() => { throw new NotFound(`Пользователя с id ${req.params.id} не существует`); })
     .then((user) => res.status(200).send(user))
-    .catch((err) => next({ name: err.name, message: 'Невозможно получить данные пользователя' }));
+    .catch(next);
 };
 
 const createUser = (req, res, next) => {
@@ -24,46 +24,54 @@ const createUser = (req, res, next) => {
     name, about, avatar, email, password,
   } = req.body;
   User.findOne({ email })
-    .orFail()
-    .then(() => next({ name: 'Conflict', message: 'Пользователь с данной почтой уже зарегистрирован' }))
-    .catch(() => {
+    .then((user) => {
+      if (user) { throw new Conflict(`Пользователь с почтой ${email} уже зарегистрирован`); }
       bcrypt.hash(password, 10)
         .then((hash) => User.create({
           name, about, avatar, email, password: hash,
         }))
-        .then((user) => res.status(200).send({ message: `Создан новый пользователь, ID: '${user._id}'` }))
-        .catch((err) => next(err));
-    });
+        .then((user) => res.status(200).send({ message: `Создан новый пользователь, id: '${user._id}'` }))
+        .catch(next);
+    })
+    .catch(next);
 };
 
 const login = (req, res, next) => {
   const { email, password } = req.body;
   User.findOne({ email }).select('+password')
-    .then((user) => bcrypt.compare(password, user.password)
-      .then((matched) => {
-        if (!matched) { next({ name: 'Unauthorized', message: 'Неправильные почта или пароль' }); }
-        const token = jwt.sign({ _id: user._id },
-          NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
-          { expiresIn: '7d' });
-        res.status(200).cookie('jwt', token, { httpOnly: true, sameSite: true }).send({ message: 'Успешная авторизация' });
-      }))
-    .catch(() => next({ name: 'Unauthorized', message: 'Неправильные почта или пароль' }));
+    .orFail(() => { throw new Unauthorized('Неправильные почта или пароль'); })
+    .then((user) => {
+      bcrypt.compare(password, user.password)
+        .then((matched) => {
+          if (!matched) { throw new Unauthorized('Неправильные почта или пароль'); }
+          const token = jwt.sign({ _id: user._id },
+            NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
+            { expiresIn: '7d' });
+          res.status(200).cookie('jwt', token, {
+            httpOnly: true,
+            sameSite: true,
+          })
+            .send({ message: 'Успешная авторизация' });
+        })
+        .catch(next);
+    })
+    .catch(next);
 };
 
 const patchUser = (req, res, next) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
-    .orFail()
+    .orFail(() => { throw new NotFound(`Пользователя с id ${req.user._id} не существует`); })
     .then((user) => res.status(200).send(user))
-    .catch((err) => next(err));
+    .catch(next);
 };
 
 const patchUserAvatar = (req, res, next) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
-    .orFail()
+    .orFail(() => { throw new NotFound(`Пользователя с id ${req.user._id} не существует`); })
     .then((user) => res.status(200).send(user))
-    .catch((err) => next(err));
+    .catch(next);
 };
 
 module.exports = {

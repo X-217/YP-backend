@@ -4,12 +4,6 @@ logs
 npm-debug.log*
 
 # Dependency directory
-# Logs
-logs
-*.log
-npm-debug.log*
-
-# Dependency directory
 node_modules
 
 # Optional npm cache directory
@@ -19,3 +13,4 @@ node_modules
 .DS_Store
 .idea
 
+.env

@@ -1,11 +1,11 @@
-const CastError = require('./http-errors_cast');
-const NotFound = require('./http-errors_not-found');
-const Unauthorized = require('./http-errors_unauthorized');
-const ValidationError = require('./http-errors_validation');
-const ConflictError = require('./http-errors_сonflict');
-const Forbidden = require('./http-errors_forbidden');
+const path = require('path');
+
+const NotFound = require(path.join(__dirname, './http-errors_not-found'));
+const Unauthorized = require(path.join(__dirname, './http-errors_unauthorized'));
+const Conflict = require(path.join(__dirname, './http-errors_сonflict'));
+const Forbidden = require(path.join(__dirname, './http-errors_forbidden'));
 
 
 module.exports = {
-  ConflictError, NotFound, Unauthorized, ValidationError, Conflict: ConflictError, Forbidden,
+  NotFound, Unauthorized, Conflict, Forbidden,
 };

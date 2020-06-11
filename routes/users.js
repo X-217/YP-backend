@@ -20,9 +20,7 @@ router.patch('/me', celebrate({
   }),
 }), patchUser);
 router.patch('/me/avatar', celebrate({
-  body: Joi.object().keys({
-    avatar: Joi.string().required().uri(),
-  }),
+  body: Joi.object().keys({ avatar: Joi.string().required().uri() }),
 }), patchUserAvatar);
 
 module.exports = router;
