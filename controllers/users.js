@@ -23,16 +23,11 @@ const createUser = (req, res, next) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
-  User.findOne({ email })
-    .then((user) => {
-      if (user) { throw new Conflict(`Пользователь с почтой ${email} уже зарегистрирован`); }
-      bcrypt.hash(password, 10)
-        .then((hash) => User.create({
-          name, about, avatar, email, password: hash,
-        }))
-        .then((user) => res.status(200).send({ message: `Создан новый пользователь, id: '${user._id}'` }))
-        .catch(next);
-    })
+  bcrypt.hash(password, 10)
+    .then((hash) => User.create({
+      name, about, avatar, email, password: hash,
+    }))
+    .then((user) => res.status(200).send({ message: `Создан новый пользователь, id: '${user._id}'` }))
     .catch(next);
 };
 
