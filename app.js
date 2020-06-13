@@ -9,7 +9,7 @@ const { requestLogger, errorLogger } = require('./middlewares/logger');
 const { Forbidden } = require('./errors/http-errors');
 
 const url = require(path.join(__dirname, './validators/url'));
-const { errorHandler } = require(path.join(__dirname, 'middlewares/errorHandler.js'));
+const errorHandler = require(path.join(__dirname, 'middlewares/errorHandler.js'));
 const { auth } = require(path.join(__dirname, 'middlewares/auth.js'));
 const cards = require(path.join(__dirname, 'routes/cards.js'));
 const users = require(path.join(__dirname, 'routes/users.js'));
