@@ -8,6 +8,7 @@ const cookieParser = require('cookie-parser');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const { Forbidden } = require('./errors/http-errors');
 
+const url = require(path.join(__dirname, './validators/url'));
 const { errorHandler } = require(path.join(__dirname, 'middlewares/errorHandler.js'));
 const { auth } = require(path.join(__dirname, 'middlewares/auth.js'));
 const cards = require(path.join(__dirname, 'routes/cards.js'));
@@ -51,7 +52,7 @@ app.post('/signup', celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
     about: Joi.string().required().min(2).max(30),
-    avatar: Joi.string().required().uri(),
+    avatar: Joi.string().required().custom(url),
     email: Joi.string().required().email(),
     password: Joi.string().required().min(8),
   }),

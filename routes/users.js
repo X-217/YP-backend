@@ -2,6 +2,8 @@ const path = require('path');
 const router = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
 
+const url = require(path.join(__dirname, '../validators/url'));
+
 const {
   getAllUsers,
   getUserByID,
@@ -20,7 +22,7 @@ router.patch('/me', celebrate({
   }),
 }), patchUser);
 router.patch('/me/avatar', celebrate({
-  body: Joi.object().keys({ avatar: Joi.string().required().uri() }),
+  body: Joi.object().keys({ avatar: Joi.string().required().custom(url) }),
 }), patchUserAvatar);
 
 module.exports = router;

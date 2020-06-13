@@ -2,6 +2,8 @@ const path = require('path');
 const router = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
 
+const url = require(path.join(__dirname, '../validators/url'));
+
 const {
   getAllCards,
   removeCardByID,
@@ -19,7 +21,7 @@ router.delete('/:cardId', celebrate({
 router.post('/', celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
-    link: Joi.string().required().uri(),
+    link: Joi.string().required().custom(url),
   }).unknown(true),
 }), createCard);
 router.put('/:cardId/likes', celebrate({
