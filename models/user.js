@@ -45,4 +45,14 @@ const userSchema = new mongoose.Schema({
 
 userSchema.plugin(uniqueValidator);
 
+
+userSchema.methods.hide = function (secret) {
+  if (!userSchema.options.toObject) userSchema.options.toObject = {};
+  userSchema.options.toObject.transform = function (doc, ret) {
+    delete ret[secret];
+    return ret;
+  };
+  return this.toObject();
+};
+
 module.exports = mongoose.model('user', userSchema);
