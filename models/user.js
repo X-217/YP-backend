@@ -8,12 +8,14 @@ const userSchema = new mongoose.Schema({
     required: [true, 'User name required'],
     minlength: 2,
     maxlength: 30,
+    match: /^\S.?\S$/gm,
   },
   about: {
     type: String,
     required: [true, 'User about required'],
     minlength: 2,
     maxlength: 30,
+    match: /^\S.?\S$/gm,
   },
   avatar: {
     type: String,
@@ -47,7 +49,9 @@ userSchema.plugin(uniqueValidator);
 
 
 userSchema.methods.hide = function (secret) {
-  if (!userSchema.options.toObject) userSchema.options.toObject = {};
+  if (!userSchema.options.toObject) {
+    userSchema.options.toObject = {};
+  }
   userSchema.options.toObject.transform = function (doc, ret) {
     delete ret[secret];
     return ret;
