@@ -7,7 +7,7 @@ const cardSchema = new mongoose.Schema({
     required: [true, 'Card name required'],
     minlength: 2,
     maxlength: 30,
-    match: /^\S.?\S$/gm,
+    match: /^\S.*\S$/gm,
   },
   link: {
     type: String,

@@ -8,14 +8,14 @@ const userSchema = new mongoose.Schema({
     required: [true, 'User name required'],
     minlength: 2,
     maxlength: 30,
-    match: /^\S.?\S$/gm,
+    match: /^\S.*\S$/,
   },
   about: {
     type: String,
     required: [true, 'User about required'],
     minlength: 2,
     maxlength: 30,
-    match: /^\S.?\S$/gm,
+    match: /^\S.*\S$/,
   },
   avatar: {
     type: String,
