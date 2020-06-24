@@ -5,7 +5,6 @@
     "airbnb-base"
   ],
   "parserOptions": {
-    // Only ESLint 6.2.0 and later support ES2020.
     "ecmaVersion": 2020
   },
   "rules": {
@@ -37,9 +36,6 @@
       "error",
       "always"
     ],
-    "object-curly-newline": ["error", {
-      "ObjectExpression": { "multiline": true, "minProperties": 6 }
-    }],
     "node/prefer-promises/dns": "error",
     "node/prefer-promises/fs": "error",
     "no-underscore-dangle": ["error", { "allow": ["_id"] }],
